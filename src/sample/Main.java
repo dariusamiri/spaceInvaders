@@ -14,8 +14,8 @@ import java.io.FileNotFoundException;
 
 
 public class Main extends Application {
-    public static int GAME_WIDTH = 640;
-    public static int GAME_HEIGHT = 480;
+    public static int GAME_WIDTH = 900;
+    public static int GAME_HEIGHT = 500;
     Users currentUser = null;
 
     @Override

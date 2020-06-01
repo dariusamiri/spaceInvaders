@@ -48,13 +48,13 @@ public class Alien {
         return yLayout;
     }
 
-    public void drawAlien() {
+    public void drawAlien(Color color) {
         if (this.getIsAlive()) {
             enemy.setHeight(ALIEN_HEIGHT);
             enemy.setWidth(ALIEN_WIDTH);
             enemy.setLayoutX(xLayout);
             enemy.setLayoutY(yLayout);
-            enemy.setFill(Color.DARKBLUE);
+            enemy.setFill(color);
         } else {
             Platform.runLater(() -> currentRoot.getChildren().remove(enemy));
         }
