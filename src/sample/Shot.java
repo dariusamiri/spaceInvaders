@@ -1,13 +1,11 @@
 package sample;
 
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.util.Duration;
 
 import java.io.File;
 
@@ -37,6 +35,10 @@ public class Shot {
         this.currentRoot = currentRoot;
         this.spaceInvaders = spaceInvaders;
         isAlive = true;
+        run();
+    }
+
+    public void run() {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
@@ -60,7 +62,7 @@ public class Shot {
             arrow.setWidth(ARROW_WIDTH);
             arrow.setLayoutX(xPos);
             arrow.setLayoutY(yPos);
-            arrow.setFill(Color.LIGHTGRAY);
+            arrow.setFill(Color.MEDIUMSPRINGGREEN);
         }
     }
 

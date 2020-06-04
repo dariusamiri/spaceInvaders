@@ -6,17 +6,19 @@ import javafx.scene.paint.Color;
 import java.util.ArrayList;
 
 public class ALienArmy {
-    private Pane root;
+    private ArrayList<Alien> firstRow = new ArrayList<>(numberALiensInArrow);
+    private ArrayList<Alien> secondRow = new ArrayList<>(numberALiensInArrow);
+    private ArrayList<Alien> thirdRow = new ArrayList<>(numberALiensInArrow);
+    private ArrayList<Alien> forthRow = new ArrayList<>(numberALiensInArrow);
+    private ArrayList<Alien> fifthRow = new ArrayList<>(numberALiensInArrow);
     private final double distanceFromSide = 150;
-    private final double distanceFromUp = 100;
-    public static final int numberALiensInArrow = 10;
-    ArrayList<Alien> firstRow = new ArrayList<>(numberALiensInArrow);
-    ArrayList<Alien> secondRow = new ArrayList<>(numberALiensInArrow);
-    ArrayList<Alien> thirdRow = new ArrayList<>(numberALiensInArrow);
+    private final double distanceFromUp = 98;
+    private final double dX = 1;
+    private final double dY = 20;
+    public static final int numberALiensInArrow = 13;
+    private Pane root;
     private boolean moveRight = true;
     private boolean moveDown = true;
-    private final double dX = 5;
-    private final double dY = 20;
     private SpaceInvaders spaceInvaders;
 
     public ALienArmy(Pane root, SpaceInvaders spaceInvaders) {
@@ -26,11 +28,33 @@ public class ALienArmy {
         setStartingPosition();
     }
 
+    public ArrayList<Alien> getFirstRow() {
+        return firstRow;
+    }
+
+    public ArrayList<Alien> getSecondRow() {
+        return secondRow;
+    }
+
+    public ArrayList<Alien> getThirdRow() {
+        return thirdRow;
+    }
+
+    public ArrayList<Alien> getForthRow() {
+        return forthRow;
+    }
+
+    public ArrayList<Alien> getFifthRow() {
+        return fifthRow;
+    }
+
     public void createArmy() {
         for (int i = 0; i < numberALiensInArrow; i++) {
             firstRow.add(new Alien(root));
             secondRow.add(new Alien(root));
             thirdRow.add(new Alien(root));
+            forthRow.add(new Alien(root));
+            fifthRow.add(new Alien(root));
         }
     }
 
@@ -40,12 +64,14 @@ public class ALienArmy {
         for (int i = 0; i < numberALiensInArrow; i++) {
             firstRow.get(i).setALienXLayout(x);
             firstRow.get(i).setALienYLayout(y);
-            y += 35;
             secondRow.get(i).setALienXLayout(x);
-            secondRow.get(i).setALienYLayout(y);
-            y += 35;
+            secondRow.get(i).setALienYLayout(y += 35);
             thirdRow.get(i).setALienXLayout(x);
-            thirdRow.get(i).setALienYLayout(y);
+            thirdRow.get(i).setALienYLayout(y += 35);
+            forthRow.get(i).setALienXLayout(x);
+            forthRow.get(i).setALienYLayout(y += 35);
+            fifthRow.get(i).setALienXLayout(x);
+            fifthRow.get(i).setALienYLayout(y += 35);
             y = distanceFromUp;
             x += 50;
         }
@@ -53,61 +79,69 @@ public class ALienArmy {
 
 
     public void drawArmy() {
-        for (Alien alien : firstRow) {
+        for (Alien alien : firstRow)
             alien.drawAlien(Color.AQUA);
-        }
-        for (Alien value : secondRow) {
+        for (Alien value : secondRow)
             value.drawAlien(Color.DARKVIOLET);
-        }
-        for (Alien alien : thirdRow) {
+        for (Alien alien : thirdRow)
             alien.drawAlien(Color.LIGHTPINK);
-        }
+        for (Alien alien : forthRow)
+            alien.drawAlien(Color.DARKGREEN);
+        for (Alien alien : fifthRow)
+            alien.drawAlien(Color.ROYALBLUE);
+    }
+
+    public double getMostLineALienX(int i) {
+        if (firstRow.get(i).getIsAlive())
+            return firstRow.get(i).getALienXLayout();
+        else if (secondRow.get(i).getIsAlive())
+            return secondRow.get(i).getALienXLayout();
+        else if (thirdRow.get(i).getIsAlive())
+            return thirdRow.get(i).getALienXLayout();
+        else if (forthRow.get(i).getIsAlive())
+            return forthRow.get(i).getALienXLayout();
+        else if (fifthRow.get(i).getIsAlive())
+            return fifthRow.get(i).getALienXLayout();
+        return 0;
     }
 
     public double getMostLeftAlienX() {
         for (int i = 0; i < numberALiensInArrow; i++) {
-            if (firstRow.get(i).getIsAlive())
-                return firstRow.get(i).getALienXLayout();
-            else if (secondRow.get(i).getIsAlive())
-                return secondRow.get(i).getALienXLayout();
-            else if (thirdRow.get(i).getIsAlive())
-                return thirdRow.get(i).getALienXLayout();
+            if (getMostLineALienX(i) != 0)
+                return getMostLineALienX(i);
         }
         return 0;
     }
 
     public double getMostRightALien() {
         for (int i = numberALiensInArrow - 1; i >= 0; i--) {
-            if (firstRow.get(i).getIsAlive())
-                return firstRow.get(i).getALienXLayout();
-            else if (secondRow.get(i).getIsAlive())
-                return secondRow.get(i).getALienXLayout();
-            else if (thirdRow.get(i).getIsAlive())
-                return thirdRow.get(i).getALienXLayout();
+            if (getMostLineALienX(i) != 0)
+                return getMostLineALienX(i);
         }
+        return 0;
+    }
+
+    public double getMostDownALienYEach(ArrayList<Alien> row) {
+        for (Alien alien : row)
+            if (alien.getIsAlive())
+                return alien.getALienYLayout();
         return 0;
     }
 
     public double getMostDownAlienY() {
-        if (isRowArmyHasAlive(thirdRow)) {
-            for (Alien alien : thirdRow) {
-                if (alien.getIsAlive())
-                    return alien.getALienYLayout();
-            }
+        if (isRowArmyHasAlive(fifthRow)) {
+            return getMostDownALienYEach(fifthRow);
+        } else if (isRowArmyHasAlive(forthRow)) {
+            return getMostDownALienYEach(forthRow);
+        } else if (isRowArmyHasAlive(thirdRow)) {
+            return getMostDownALienYEach(thirdRow);
         } else if (isRowArmyHasAlive(secondRow)) {
-            for (Alien alien : secondRow) {
-                if (alien.getIsAlive())
-                    return alien.getALienYLayout();
-            }
+            return getMostDownALienYEach(secondRow);
         } else if (isRowArmyHasAlive(firstRow)) {
-            for (Alien alien : firstRow) {
-                if (alien.getIsAlive())
-                    return alien.getALienYLayout();
-            }
+            return getMostDownALienYEach(firstRow);
         }
         return 0;
     }
-
 
     public boolean isRowArmyHasAlive(ArrayList<Alien> row) {
         for (Alien alien : row) {
@@ -117,17 +151,19 @@ public class ALienArmy {
         return false;
     }
 
+    public void moveRightEach(ArrayList<Alien> row) {
+        for (Alien alien : row) {
+            alien.setALienXLayout(alien.getALienXLayout() + dX);
+        }
+    }
+
     public void moveRight() {
         if (moveRight && getMostRightALien() + dX + Alien.ALIEN_WIDTH <= Main.GAME_WIDTH) {
-            for (Alien alien : firstRow) {
-                alien.setALienXLayout(alien.getALienXLayout() + dX);
-            }
-            for (Alien alien : secondRow) {
-                alien.setALienXLayout(alien.getALienXLayout() + dX);
-            }
-            for (Alien alien : thirdRow) {
-                alien.setALienXLayout(alien.getALienXLayout() + dX);
-            }
+            moveRightEach(firstRow);
+            moveRightEach(secondRow);
+            moveRightEach(thirdRow);
+            moveRightEach(forthRow);
+            moveRightEach(fifthRow);
             moveDown = true;
         } else {
             moveRight = false;
@@ -135,20 +171,22 @@ public class ALienArmy {
         }
     }
 
+    public void moveDownEach(ArrayList<Alien> row) {
+        for (Alien alien : row) {
+            alien.setALienYLayout(alien.getALienYLayout() + dY);
+        }
+    }
+
     public void moveDown() {
-        if (getMostDownAlienY() + dY >= Main.GAME_HEIGHT)
+        if (getMostDownAlienY() + dY + Alien.ALIEN_HEIGHT >= Main.GAME_HEIGHT)
             SpaceInvaders.gameOver = true;
         else {
             if (moveDown) {
-                for (Alien alien : firstRow) {
-                    alien.setALienYLayout(alien.getALienYLayout() + dY);
-                }
-                for (Alien alien : secondRow) {
-                    alien.setALienYLayout(alien.getALienYLayout() + dY);
-                }
-                for (Alien alien : thirdRow) {
-                    alien.setALienYLayout(alien.getALienYLayout() + dY);
-                }
+                moveDownEach(firstRow);
+                moveDownEach(secondRow);
+                moveDownEach(thirdRow);
+                moveDownEach(forthRow);
+                moveDownEach(fifthRow);
                 moveDown = false;
             } else {
                 if (moveRight)
@@ -158,17 +196,19 @@ public class ALienArmy {
         }
     }
 
+    public void moveLeftEach(ArrayList<Alien> row) {
+        for (Alien alien : row) {
+            alien.setALienXLayout(alien.getALienXLayout() - dX);
+        }
+    }
+
     public void moveLeft() {
         if (getMostLeftAlienX() - dX >= 0 && !moveRight) {
-            for (Alien alien : firstRow) {
-                alien.setALienXLayout(alien.getALienXLayout() - dX);
-            }
-            for (Alien alien : secondRow) {
-                alien.setALienXLayout(alien.getALienXLayout() - dX);
-            }
-            for (Alien alien : thirdRow) {
-                alien.setALienXLayout(alien.getALienXLayout() - dX);
-            }
+            moveLeftEach(firstRow);
+            moveLeftEach(secondRow);
+            moveLeftEach(thirdRow);
+            moveLeftEach(forthRow);
+            moveLeftEach(fifthRow);
         } else {
             moveRight = true;
             moveDown = true;
@@ -176,23 +216,26 @@ public class ALienArmy {
         }
     }
 
+    public boolean checkIsHitEach(double xShot, double yShot, ArrayList<Alien> row, int i) {
+        if (yShot - Shot.ARROW_HEIGHT <= row.get(i).getALienYLayout() && yShot >= row.get(i).getALienYLayout() - Alien.ALIEN_HEIGHT) {
+            row.get(i).setIsAlive(false);
+            return true;
+        }
+        return false;
+    }
+
     public boolean checkIsHit(double xShot, double yShot) {
         for (int i = 0; i < numberALiensInArrow; i++) {
-            if (thirdRow.get(i).getIsAlive() && xShot >= thirdRow.get(i).getALienXLayout() && xShot + Shot.ARROW_WIDTH <= thirdRow.get(i).getALienXLayout() + Alien.ALIEN_WIDTH) {
-                if (yShot - Shot.ARROW_HEIGHT <= thirdRow.get(i).getALienYLayout() && yShot >= thirdRow.get(i).getALienYLayout() - Alien.ALIEN_HEIGHT) {
-                    thirdRow.get(i).setIsAlive(false);
-                    return true;
-                }
+            if (fifthRow.get(i).getIsAlive() && xShot >= fifthRow.get(i).getALienXLayout() && xShot + Shot.ARROW_WIDTH <= fifthRow.get(i).getALienXLayout() + Alien.ALIEN_WIDTH) {
+                if (checkIsHitEach(xShot, yShot, fifthRow, i)) return checkIsHitEach(xShot, yShot, fifthRow, i);
+            } else if (forthRow.get(i).getIsAlive() && xShot >= forthRow.get(i).getALienXLayout() && xShot + Shot.ARROW_WIDTH <= forthRow.get(i).getALienXLayout() + Alien.ALIEN_WIDTH) {
+                if (checkIsHitEach(xShot, yShot, forthRow, i)) return checkIsHitEach(xShot, yShot, forthRow, i);
+            } else if (thirdRow.get(i).getIsAlive() && xShot >= thirdRow.get(i).getALienXLayout() && xShot + Shot.ARROW_WIDTH <= thirdRow.get(i).getALienXLayout() + Alien.ALIEN_WIDTH) {
+                if (checkIsHitEach(xShot, yShot, thirdRow, i)) return checkIsHitEach(xShot, yShot, thirdRow, i);
             } else if (secondRow.get(i).getIsAlive() && xShot >= secondRow.get(i).getALienXLayout() && xShot + Shot.ARROW_WIDTH <= secondRow.get(i).getALienXLayout() + Alien.ALIEN_WIDTH) {
-                if (yShot - Shot.ARROW_HEIGHT <= secondRow.get(i).getALienYLayout() && yShot >= secondRow.get(i).getALienYLayout() - Alien.ALIEN_HEIGHT) {
-                    secondRow.get(i).setIsAlive(false);
-                    return true;
-                }
+                if (checkIsHitEach(xShot, yShot, secondRow, i)) return checkIsHitEach(xShot, yShot, secondRow, i);
             } else if (firstRow.get(i).getIsAlive() && xShot >= firstRow.get(i).getALienXLayout() && xShot + Shot.ARROW_WIDTH <= firstRow.get(i).getALienXLayout() + Alien.ALIEN_WIDTH) {
-                if (yShot - Shot.ARROW_HEIGHT <= firstRow.get(i).getALienYLayout() && yShot >= firstRow.get(i).getALienYLayout() - Alien.ALIEN_HEIGHT) {
-                    firstRow.get(i).setIsAlive(false);
-                    return true;
-                }
+                if (checkIsHitEach(xShot, yShot, firstRow, i)) return checkIsHitEach(xShot, yShot, firstRow, i);
             }
         }
         return false;

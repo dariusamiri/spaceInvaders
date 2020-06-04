@@ -88,7 +88,7 @@ public class Users {
     }
 
     public static boolean isPasswordCorrect(String userName, String password) {
-        if (allUsers.size() != 0 && getUserByUserName(userName).getPassword().equals(password))
+        if (isThisUserNameExist(userName) && getUserByUserName(userName).getPassword().equals(password))
             return true;
         return false;
     }

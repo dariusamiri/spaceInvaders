@@ -1,39 +1,27 @@
 package sample;
 
-import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
-import javafx.util.Duration;
-
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.io.File;
 
 public class Player {
-    private Stage primaryStage;
-    private Pane currentRoot;
+    private final Pane currentRoot;
     private Rectangle ship = new Rectangle();
     private boolean shotState = true;
     private SpaceInvaders spaceInvaders;
-    private Shot shot;
-    private final int dX = 10;
+    private final int dX = 20;
     private final int SHIP_HEIGHT = 19;
     private final int SHIP_WIDTH = 57;
     private final double yPos = Main.GAME_HEIGHT - SHIP_HEIGHT;
     private double xPos = (Main.GAME_WIDTH - SHIP_WIDTH) / 2;
 
 
-    public Player(Stage primaryStage, Pane currentRoot, SpaceInvaders spaceInvaders) {
+    public Player(Pane currentRoot, SpaceInvaders spaceInvaders) {
         this.currentRoot = currentRoot;
-        this.primaryStage = primaryStage;
         this.spaceInvaders = spaceInvaders;
         currentRoot.getChildren().add(ship);
-        primaryStage.getScene().setOnKeyPressed(e -> this.keyPressed(e.getCode()));
+        spaceInvaders.getPrimaryStage().getScene().setOnKeyPressed(e -> this.keyPressed(e.getCode()));
     }
 
     public void setShotState(boolean shotState) {
@@ -45,7 +33,7 @@ public class Player {
         ship.setWidth(SHIP_WIDTH);
         ship.setLayoutX(xPos);
         ship.setLayoutY(yPos);
-        ship.setFill(Color.DARKGREEN);
+        ship.setFill(Color.DARKGRAY);
     }
 
     public void keyPressed(KeyCode e) {
@@ -56,7 +44,7 @@ public class Player {
         } else if (e == KeyCode.SPACE) {
             shot();
         } else if (e == KeyCode.ESCAPE) {
-            Main.showGameMenu(primaryStage, primaryStage.getScene());
+            spaceInvaders.getPrimaryStage().setScene(spaceInvaders.getPreviousScene());
             spaceInvaders.gameOver = true;
             spaceInvaders.show = false;
             spaceInvaders.gameOver();
@@ -64,10 +52,8 @@ public class Player {
     }
 
     public void shot() {
-
         if (shotState) {
-
-            shot = new Shot(ship.getLayoutX() + SHIP_WIDTH / 2 - Shot.ARROW_WIDTH / 2, ship.getLayoutY(), currentRoot, spaceInvaders);
+            Shot shot = new Shot(ship.getLayoutX() + SHIP_WIDTH / 2 - Shot.ARROW_WIDTH / 2, ship.getLayoutY(), currentRoot, spaceInvaders);
             shotState = false;
         }
     }

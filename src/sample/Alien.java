@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Alien {
     public static final double ALIEN_HEIGHT = 15;
-    public static final double ALIEN_WIDTH = 15;
+    public static final double ALIEN_WIDTH = 17;
     private double xLayout;
     private double yLayout;
     private Rectangle enemy = new Rectangle();
@@ -33,7 +33,7 @@ public class Alien {
     }
 
     public void setIsAlive(boolean alive) {
-        isAlive = false;
+        isAlive = alive;
     }
 
     public boolean getIsAlive() {
@@ -55,9 +55,7 @@ public class Alien {
             enemy.setLayoutX(xLayout);
             enemy.setLayoutY(yLayout);
             enemy.setFill(color);
-        } else {
-//            Platform.runLater(() -> currentRoot.getChildren().remove(enemy));
-            Platform.runLater(() -> enemy.setFill(null));
-        }
+        } else
+            currentRoot.getChildren().remove(enemy);
     }
 }

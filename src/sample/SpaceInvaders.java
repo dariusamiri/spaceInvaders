@@ -2,7 +2,6 @@ package sample;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -23,7 +22,6 @@ public class SpaceInvaders {
     private ALienArmy army = null;
     private Pane currentRoot = new Pane();
     private Text point;
-    private Button exit;
     public static boolean gameOver;
     String name = "spaceinvaders.mp3";
     Media media = new Media(new File(name).toURI().toString());
@@ -47,28 +45,7 @@ public class SpaceInvaders {
         primaryStage.setScene(scene);
         paint();
         gameOver = false;
-
-        AnimationTimer spaceInvaders = new AnimationTimer() {
-            @Override
-            public void handle(long l) {
-                if (Main.currentUser.isBackGroundSound()) {
-                    backGroundSound.setAutoPlay(true);
-                    backGroundSound.setCycleCount(MediaPlayer.INDEFINITE);
-                    backGroundSound.setVolume(0.6);
-                }
-                if (gameOver) {
-                    gameOver();
-                    this.stop();
-                }
-                if (time > 5) {
-                    army.moveArmy();
-                    time = 0;
-                }
-                update();
-                time++;
-            }
-        };
-        spaceInvaders.start();
+        run();
     }
 
     public ALienArmy getArmy() {
@@ -79,6 +56,14 @@ public class SpaceInvaders {
         return player;
     }
 
+    public Scene getPreviousScene() {
+        return previousScene;
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
     public void setUserBestScore() {
         if (Main.currentUser.getScore() > Main.currentUser.getBestScore()) {
             Main.currentUser.setBestScore(Main.currentUser.getScore());
@@ -86,17 +71,56 @@ public class SpaceInvaders {
         Main.currentUser.setScore(0);
     }
 
+    public void runMusic() {
+        if (Main.currentUser.isBackGroundSound()) {
+            backGroundSound.setAutoPlay(true);
+            backGroundSound.setCycleCount(MediaPlayer.INDEFINITE);
+            backGroundSound.setVolume(0.6);
+        }
+    }
+
+    public void win(AnimationTimer spaceInvaders) {
+        if (!army.isRowArmyHasAlive(army.getFirstRow()) && !army.isRowArmyHasAlive(army.getSecondRow()) && !army.isRowArmyHasAlive(army.getThirdRow()) && !army.isRowArmyHasAlive(army.getForthRow()) && !army.isRowArmyHasAlive(army.getFifthRow())) {
+            show = false;
+            gameOver = false;
+            spaceInvaders.stop();
+            gameOver();
+            new AlertBox("Won!", "You won!!!!  thank you for using our Game");
+        }
+    }
+
+    public void run() {
+        AnimationTimer spaceInvaders = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                runMusic();
+                if (gameOver) {
+                    gameOver();
+                    this.stop();
+                }
+                if (time > 1) {
+                    army.moveArmy();
+                    time = 0;
+                }
+                win(this);
+                update();
+                time++;
+            }
+        };
+        spaceInvaders.start();
+    }
+
     public void gameOver() {
         setUserBestScore();
         primaryStage.setScene(previousScene);
         if (show) {
-            AlertBox.displayAlert("Game Over!", "\nYou Lose!");
+            new AlertBox("Game Over!", "Unfortunately you lose! May you win later");
         }
         backGroundSound.stop();
     }
 
     public void paint() {
-        player = new Player(primaryStage, currentRoot, this);
+        player = new Player(currentRoot, this);
         player.drawShip();
         army = new ALienArmy(currentRoot, this);
         army.drawArmy();

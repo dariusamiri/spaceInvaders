@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.animation.AnimationTimer;
-import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -18,17 +17,25 @@ public class AlienShot {
     private final double dYShot = 3;
     private ALienArmy army;
     private ArrayList<Rectangle> arrows = new ArrayList<>();
-    ArrayList<Alien> firstRow;
-    ArrayList<Alien> secondRow;
-    ArrayList<Alien> thirdRow;
+    private ArrayList<Alien> firstRow;
+    private ArrayList<Alien> secondRow;
+    private ArrayList<Alien> thirdRow;
+    private ArrayList<Alien> forthRow;
+    private ArrayList<Alien> fifthRow;
 
     public AlienShot(Pane currentRoot, SpaceInvaders spaceInvaders) {
         this.currentRoot = currentRoot;
         this.spaceInvaders = spaceInvaders;
         army = spaceInvaders.getArmy();
-        firstRow = army.firstRow;
-        secondRow = army.secondRow;
-        thirdRow = army.thirdRow;
+        firstRow = army.getFirstRow();
+        secondRow = army.getSecondRow();
+        thirdRow = army.getThirdRow();
+        forthRow = army.getForthRow();
+        fifthRow = army.getFifthRow();
+        run();
+    }
+
+    public void run() {
         AnimationTimer alienShot = new AnimationTimer() {
             @Override
             public void handle(long l) {
@@ -93,14 +100,18 @@ public class AlienShot {
         int iFirstRow = random.nextInt(ALienArmy.numberALiensInArrow);
         int iSecondRow = random.nextInt(ALienArmy.numberALiensInArrow);
         int iThirdRow = random.nextInt(ALienArmy.numberALiensInArrow);
-        if (firstRow.get(iFirstRow).getIsAlive()) {
-            drawShot(firstRow.get(iFirstRow).getALienXLayout() + Alien.ALIEN_WIDTH / 2, firstRow.get(iFirstRow).getALienYLayout());
-        }
-        if (secondRow.get(iSecondRow).getIsAlive()) {
-            drawShot(secondRow.get(iSecondRow).getALienXLayout() + Alien.ALIEN_WIDTH / 2, secondRow.get(iSecondRow).getALienYLayout());
-        }
-        if (thirdRow.get(iThirdRow).getIsAlive()) {
-            drawShot(thirdRow.get(iThirdRow).getALienXLayout() + Alien.ALIEN_WIDTH / 2, thirdRow.get(iThirdRow).getALienYLayout());
+        int iForthRow = random.nextInt(ALienArmy.numberALiensInArrow);
+        int iFifthRow = random.nextInt(ALienArmy.numberALiensInArrow);
+        shotEach(firstRow, iFirstRow);
+        shotEach(secondRow, iSecondRow);
+        shotEach(thirdRow, iThirdRow);
+        shotEach(forthRow, iForthRow);
+        shotEach(fifthRow, iFifthRow);
+    }
+
+    public void shotEach(ArrayList<Alien> row, int random) {
+        if (row.get(random).getIsAlive()) {
+            drawShot(row.get(random).getALienXLayout() + Alien.ALIEN_WIDTH / 2, row.get(random).getALienYLayout());
         }
     }
 }
