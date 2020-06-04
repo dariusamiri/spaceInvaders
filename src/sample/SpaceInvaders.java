@@ -27,7 +27,7 @@ public class SpaceInvaders {
     Media media = new Media(new File(name).toURI().toString());
     MediaPlayer backGroundSound = new MediaPlayer(media);
     int time = 0;
-    public static boolean show = true;
+    public static boolean show;
 
     public SpaceInvaders(Stage primaryStage, Scene previousScene) {
         this.primaryStage = primaryStage;
@@ -40,6 +40,7 @@ public class SpaceInvaders {
         point.setFont(Font.font(38));
         point.setLayoutX(50);
         point.setLayoutY(50);
+        this.show = true;
         currentRoot.getChildren().add(point);
         Scene scene = new Scene(currentRoot, Main.GAME_WIDTH, Main.GAME_HEIGHT);
         primaryStage.setScene(scene);
