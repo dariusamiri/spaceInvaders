@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
@@ -8,15 +9,22 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+
 
 public class Main extends Application {
-    public static int GAME_WIDTH = 1285;
-    public static int GAME_HEIGHT = 685;
-    Users currentUser = null;
+    public static int GAME_WIDTH = 1000;
+    public static int GAME_HEIGHT = 600;
+    public static Users currentUser = null;
 
     @Override
 
@@ -32,8 +40,16 @@ public class Main extends Application {
 
     Scene signIn, signUp;
 
+    public static void setPositionNode(Node node, Pane root, int x, int y) {
+        root.getChildren().add(node);
+        node.setLayoutX(x);
+        node.setLayoutY(y);
+    }
+
     public void showSignInMenu(Stage primaryStage) {
-        GridPane signInRoot = new GridPane();
+        final int SIGN_IN_WIDTH = 500;
+        final int SIGN_IN_HEIGHT = 500;
+        Pane signInRoot = new Pane();
         Text userName = new Text("username : ");
         Text password = new Text("password : ");
         TextField userNameField = new TextField("");
@@ -41,19 +57,18 @@ public class Main extends Application {
         Button signUp = new Button("Create new Account");
         Button logIn = new Button("Log in");
         Button button = new Button("Button");
-
-        signInRoot.setVgap(5);
-        signInRoot.setHgap(5);
-        signInRoot.add(userName, 2, 6);
-        signInRoot.add(userNameField, 3, 6);
-        signInRoot.add(password, 2, 8);
-        signInRoot.add(passwordField, 3, 8);
-        signInRoot.add(logIn, 2, 14);
-        signInRoot.add(signUp, 2, 19);
-        signInRoot.add(button, 2, 25);
-        signInRoot.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, null, null)));
-        signIn = new Scene(signInRoot, Main.GAME_WIDTH, Main.GAME_HEIGHT);
-        button.setOnAction(e -> new SpaceInvaders(primaryStage, signIn));
+        setPositionNode(userName, signInRoot, SIGN_IN_WIDTH / 2 - 155, SIGN_IN_HEIGHT / 2 - 90);
+        userName.setFont(Font.font(18));
+        setPositionNode(userNameField, signInRoot, SIGN_IN_WIDTH / 2 - 15, SIGN_IN_HEIGHT / 2 - 110);
+        setPositionNode(password, signInRoot, SIGN_IN_WIDTH / 2 - 155, SIGN_IN_HEIGHT / 2 - 45);
+        password.setFont(Font.font(18));
+        setPositionNode(passwordField, signInRoot, SIGN_IN_WIDTH / 2 - 15, SIGN_IN_HEIGHT / 2 - 65);
+        setPositionNode(logIn, signInRoot, SIGN_IN_WIDTH / 2 - 155, SIGN_IN_HEIGHT / 2);
+        setPositionNode(signUp, signInRoot, SIGN_IN_WIDTH / 2, SIGN_IN_HEIGHT / 2);
+        signInRoot.getChildren().add(button);
+        signInRoot.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, null, null)));
+        signIn = new Scene(signInRoot, SIGN_IN_WIDTH, SIGN_IN_HEIGHT);
+        button.setOnAction(e -> showGameMenu(primaryStage, signIn));
         signUp.setOnAction(e -> showSignUpMenu(primaryStage, signIn));
         logIn.setOnAction(e -> {
             if (!userNameField.getText().isEmpty() && !passwordField.getText().isEmpty() && Users.isPasswordCorrect(userNameField.getText(), passwordField.getText())) {
@@ -66,7 +81,9 @@ public class Main extends Application {
     }
 
     public void showSignUpMenu(Stage primaryStage, Scene previousScene) {
-        GridPane signUpRoot = new GridPane();
+        final int SIGN_UP_WIDTH = 500;
+        final int SIGN_UP_HEIGHT = 500;
+        Pane signUpRoot = new Pane();
         Text name = new Text("name : ");
         Text surname = new Text("surname : ");
         Text userName = new Text("username : ");
@@ -81,46 +98,59 @@ public class Main extends Application {
             try {
                 if (!nameField.getText().isEmpty() && !surNameField.getText().isEmpty() && !userNameField.getText().isEmpty() && !passwordField.getText().isEmpty()) {
                     new Users(nameField.getText(), surNameField.getText(), userNameField.getText(), passwordField.getText());
-                    AlertBox.displayAlert("Success", "Your new Account successfully created.");
                     showSignInMenu(primaryStage);
+                    AlertBox.displayAlert("Success", "Your new Account successfully created.");
                 }
             } catch (Exception exception) {
                 AlertBox.displayAlert("error!", " this username has been already used.\n\nplease choose another one.");
             }
         });
         back.setOnAction(e -> primaryStage.setScene(previousScene));
-        signUpRoot.setVgap(5);
-        signUpRoot.setHgap(5);
-        signUpRoot.add(name, 2, 4);
-        signUpRoot.add(nameField, 3, 4);
-        signUpRoot.add(surname, 2, 6);
-        signUpRoot.add(surNameField, 3, 6);
-        signUpRoot.add(userName, 2, 8);
-        signUpRoot.add(userNameField, 3, 8);
-        signUpRoot.add(password, 2, 10);
-        signUpRoot.add(passwordField, 3, 10);
-        signUpRoot.add(createNewAccount, 2, 14);
-        signUpRoot.add(back, 3, 14);
-        signUpRoot.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, null, null)));
-        signUp = new Scene(signUpRoot, Main.GAME_WIDTH, Main.GAME_HEIGHT);
+        setPositionNode(name, signUpRoot, SIGN_UP_WIDTH / 2 - 155, SIGN_UP_HEIGHT / 2 - 120);
+        name.setFont(Font.font(17));
+        setPositionNode(nameField, signUpRoot, SIGN_UP_WIDTH / 2 - 15, SIGN_UP_HEIGHT / 2 - 140);
+        setPositionNode(surname, signUpRoot, SIGN_UP_WIDTH / 2 - 155, SIGN_UP_HEIGHT / 2 - 75);
+        surname.setFont(Font.font(17));
+        setPositionNode(surNameField, signUpRoot, SIGN_UP_WIDTH / 2 - 15, SIGN_UP_HEIGHT / 2 - 95);
+        setPositionNode(userName, signUpRoot, SIGN_UP_WIDTH / 2 - 155, SIGN_UP_HEIGHT / 2 - 30);
+        userName.setFont(Font.font(17));
+        setPositionNode(userNameField, signUpRoot, SIGN_UP_WIDTH / 2 - 15, SIGN_UP_HEIGHT / 2 - 50);
+        setPositionNode(password, signUpRoot, SIGN_UP_WIDTH / 2 - 155, SIGN_UP_HEIGHT / 2 + 15);
+        password.setFont(Font.font(17));
+        setPositionNode(passwordField, signUpRoot, SIGN_UP_WIDTH / 2 - 15, SIGN_UP_HEIGHT / 2 - 5);
+        setPositionNode(back, signUpRoot, SIGN_UP_WIDTH / 2 + 25, SIGN_UP_HEIGHT / 2 + 70);
+        setPositionNode(createNewAccount, signUpRoot, SIGN_UP_WIDTH / 2 - 155, SIGN_UP_HEIGHT / 2 + 70);
+        signUpRoot.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, null, null)));
+        signUp = new Scene(signUpRoot, SIGN_UP_WIDTH, SIGN_UP_HEIGHT);
         primaryStage.setScene(signUp);
     }
 
-    public void showGameMenu(Stage primaryStage, Scene previousScene) {
+    public static void showGameMenu(Stage primaryStage, Scene previousScene) {
+        final int GAME_MENU_WIDTH = 500;
+        final int GAME_MENU_HEIGHT = 500;
         Scene gameMenu;
         Button newGame = new Button("New Game");
         Button changeUserName = new Button("Change Username");
         Button logOut = new Button("Log Out");
-        GridPane gameMenuRoot = new GridPane();
-        gameMenuRoot.setHgap(5);
-        gameMenuRoot.setVgap(5);
-        gameMenuRoot.add(newGame, 2, 4);
-        gameMenuRoot.add(changeUserName, 2, 7);
-        gameMenuRoot.add(logOut, 2, 10);
-        gameMenuRoot.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, null, null)));
-        gameMenu = new Scene(gameMenuRoot, GAME_WIDTH, GAME_HEIGHT);
+        Button scoreBoard = new Button("Score Board");
+        Button setting = new Button("Setting");
+        Pane gameMenuRoot = new Pane();
+        setPositionNode(newGame, gameMenuRoot, GAME_MENU_WIDTH / 2 - 60, GAME_MENU_HEIGHT / 2 - 180);
+        newGame.setFont(Font.font(20));
+        setPositionNode(changeUserName, gameMenuRoot, GAME_MENU_WIDTH / 2 - 90, GAME_MENU_HEIGHT / 2 - 110);
+        changeUserName.setFont(Font.font(20));
+        setPositionNode(scoreBoard, gameMenuRoot, GAME_MENU_WIDTH / 2 - 65, GAME_MENU_HEIGHT / 2 - 40);
+        scoreBoard.setFont(Font.font(20));
+        setPositionNode(setting, gameMenuRoot, GAME_MENU_WIDTH / 2 - 45, GAME_MENU_HEIGHT / 2 + 30);
+        setting.setFont(Font.font(20));
+        setPositionNode(logOut, gameMenuRoot, GAME_MENU_WIDTH / 2 - 45, GAME_MENU_HEIGHT / 2 + 100);
+        logOut.setFont(Font.font(20));
+        gameMenuRoot.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, null, null)));
+        gameMenu = new Scene(gameMenuRoot, GAME_MENU_WIDTH, GAME_MENU_HEIGHT);
         newGame.setOnAction(e -> new SpaceInvaders(primaryStage, gameMenu));
         changeUserName.setOnAction(e -> showChangeUserNameMenu(primaryStage, gameMenu));
+        scoreBoard.setOnAction(e -> showScoreBoards(primaryStage, gameMenu));
+        setting.setOnAction(e -> showSetting(primaryStage, primaryStage.getScene()));
         logOut.setOnAction(e -> {
             currentUser = null;
             primaryStage.setScene(previousScene);
@@ -128,7 +158,9 @@ public class Main extends Application {
         primaryStage.setScene(gameMenu);
     }
 
-    public void showChangeUserNameMenu(Stage primaryStage, Scene previousScene) {
+    public static void showChangeUserNameMenu(Stage primaryStage, Scene previousScene) {
+        final int CHANGE_USERNAME_MENU_WIDTH = 500;
+        final int CHANGE_USERNAME_MENU_HEIGHT = 500;
         Text newUserName = new Text("New username  :  ");
         TextField newUserNameField = new TextField("");
         Button ok = new Button("Ok");
@@ -142,15 +174,100 @@ public class Main extends Application {
             }
         });
         back.setOnAction(e -> primaryStage.setScene(previousScene));
-        GridPane root = new GridPane();
-        root.setVgap(5);
-        root.setHgap(5);
-        root.add(newUserName, 2, 3);
-        root.add(newUserNameField, 3, 3);
-        root.add(back, 2, 6);
-        root.add(ok, 3, 6);
-        root.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, null, null)));
-        Scene scene = new Scene(root, GAME_WIDTH, GAME_HEIGHT);
+        Pane changeUserNameRoot = new Pane();
+        setPositionNode(newUserName, changeUserNameRoot, CHANGE_USERNAME_MENU_WIDTH / 2 - 155, CHANGE_USERNAME_MENU_HEIGHT / 2 - 100);
+        newUserName.setFont(Font.font(17));
+        setPositionNode(newUserNameField, changeUserNameRoot, CHANGE_USERNAME_MENU_WIDTH / 2 + 20, CHANGE_USERNAME_MENU_HEIGHT / 2 - 120);
+        setPositionNode(back, changeUserNameRoot, CHANGE_USERNAME_MENU_WIDTH / 2 - 155, CHANGE_USERNAME_MENU_HEIGHT / 2 - 60);
+        back.setFont(Font.font(15));
+        setPositionNode(ok, changeUserNameRoot, CHANGE_USERNAME_MENU_WIDTH / 2 - 80, CHANGE_USERNAME_MENU_HEIGHT / 2 - 60);
+        ok.setFont(Font.font(15));
+        changeUserNameRoot.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, null, null)));
+        Scene scene = new Scene(changeUserNameRoot, CHANGE_USERNAME_MENU_WIDTH, CHANGE_USERNAME_MENU_HEIGHT);
         primaryStage.setScene(scene);
+    }
+
+    static class CompareByScore implements Comparator<Users> {
+
+        @Override
+        public int compare(Users o1, Users o2) {
+            return o1.getScore() - o2.getScore();
+        }
+    }
+
+    public static void showScoreBoards(Stage primaryStage, Scene previousScene) {
+        final int SHOW_SCORE_BOARD_WIDTH = 500;
+        final int SHOW_SCORE_BOARD_HEIGHT = 500;
+        int x = SHOW_SCORE_BOARD_WIDTH / 2 - 155;
+        int y = 25;
+        Pane scoreBoardRoot = new Pane();
+        if (Users.allUsers.size() > 0) {
+            ArrayList<Users> all = Users.allUsers;
+            Collections.sort(all, new CompareByScore());
+            int i = 1;
+            for (Users users : all) {
+                Text user = new Text(i++ + ".  " + "User     :        " + users.getUserName());
+                Text score = new Text("Score   :        " + users.getBestScore());
+                setPositionNode(user, scoreBoardRoot, x, y);
+                user.setFont(Font.font(16));
+                setPositionNode(score, scoreBoardRoot, x + 160, y);
+                score.setFont(Font.font(16));
+                y += 20;
+            }
+        }
+        Button back = new Button("Back");
+        setPositionNode(back, scoreBoardRoot, 0, 0);
+        back.setFont(Font.font(16));
+        back.setOnAction(e -> primaryStage.setScene(previousScene));
+        scoreBoardRoot.setBackground(new Background(new BackgroundFill(Color.LIGHTGOLDENRODYELLOW, null, null)));
+        Scene scoreBoard = new Scene(scoreBoardRoot, SHOW_SCORE_BOARD_WIDTH, SHOW_SCORE_BOARD_HEIGHT);
+        primaryStage.setScene(scoreBoard);
+    }
+
+    public static void showSetting(Stage primaryStage, Scene previousScene) {
+        final int SETTING_WIDTH = 500;
+        final int SETTING_HEIGHT = 500;
+        Pane settingRoot = new Pane();
+        Button backGroundSound = new Button("Background Music");
+        backGroundSound.setFont(Font.font(20));
+        Button gameSound = new Button("Game Sound");
+        gameSound.setFont(Font.font(20));
+        Button back = new Button("Back");
+        back.setFont(Font.font(20));
+        setPositionNode(backGroundSound, settingRoot, SETTING_WIDTH / 2 - 90, SETTING_HEIGHT / 2 - 110);
+        setPositionNode(gameSound, settingRoot, SETTING_WIDTH / 2 - 65, SETTING_HEIGHT / 2 - 30);
+        setPositionNode(back, settingRoot, SETTING_WIDTH / 2 - 30, SETTING_HEIGHT / 2 + 50);
+        backGroundSound.setOnAction(e -> showSoundOptionMenu(primaryStage, primaryStage.getScene(), true));
+        gameSound.setOnAction(e -> showSoundOptionMenu(primaryStage, primaryStage.getScene(), false));
+        back.setOnAction(e -> primaryStage.setScene(previousScene));
+        settingRoot.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, null, null)));
+        Scene scoreBoard = new Scene(settingRoot, SETTING_WIDTH, SETTING_HEIGHT);
+        primaryStage.setScene(scoreBoard);
+    }
+
+    public static void showSoundOptionMenu(Stage primaryStage, Scene previousScene, boolean backGround) {
+        final int SOUND_WIDTH = 250;
+        final int SOUND_HEIGHT = 250;
+        Pane soundRoot = new Pane();
+        Button on = new Button("ON");
+        on.setFont(Font.font(20));
+        Button off = new Button("OFF");
+        off.setFont(Font.font(20));
+        Button back = new Button("Back");
+        back.setFont(Font.font(20));
+        setPositionNode(on, soundRoot, SOUND_WIDTH / 2 - 80, SOUND_HEIGHT / 2 - 60);
+        setPositionNode(off, soundRoot, SOUND_WIDTH / 2 + 20, SOUND_HEIGHT / 2 - 60);
+        setPositionNode(back, soundRoot, SOUND_WIDTH / 2 - 80, SOUND_HEIGHT / 2 + 10);
+        back.setOnAction(e -> primaryStage.setScene(previousScene));
+        if (backGround) {
+            on.setOnAction(e -> currentUser.setBackGroundSound(true));
+            off.setOnAction(e -> currentUser.setBackGroundSound(false));
+        } else {
+            on.setOnAction(e -> currentUser.setGameSound(true));
+            off.setOnAction(e -> currentUser.setGameSound(false));
+        }
+        soundRoot.setBackground(new Background(new BackgroundFill(Color.DARKSLATEGRAY, null, null)));
+        Scene scoreBoard = new Scene(soundRoot, SOUND_WIDTH, SOUND_HEIGHT);
+        primaryStage.setScene(scoreBoard);
     }
 }

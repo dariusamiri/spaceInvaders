@@ -8,7 +8,10 @@ public class Users {
     private String userName;
     private String password;
     private int Score;
+    private int bestScore;
     public static ArrayList<Users> allUsers = new ArrayList<>();
+    private boolean gameSound = true;
+    private boolean backGroundSound = true;
 
     public Users(String name, String surName, String userName, String password) throws Exception {
         if (!isThisUserNameExist(userName)) {
@@ -16,10 +19,27 @@ public class Users {
             this.surName = surName;
             this.userName = userName;
             this.password = password;
+            this.setScore(0);
             allUsers.add(this);
         } else {
             throw new Exception();
         }
+    }
+
+    public boolean isGameSound() {
+        return gameSound;
+    }
+
+    public boolean isBackGroundSound() {
+        return backGroundSound;
+    }
+
+    public int getScore() {
+        return Score;
+    }
+
+    public int getBestScore() {
+        return bestScore;
     }
 
     public String getUserName() {
@@ -30,8 +50,24 @@ public class Users {
         return password;
     }
 
+    public void setScore(int score) {
+        Score = score;
+    }
+
+    public void setBestScore(int bestScore) {
+        this.bestScore = bestScore;
+    }
+
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public void setGameSound(boolean gameSound) {
+        this.gameSound = gameSound;
+    }
+
+    public void setBackGroundSound(boolean backGroundSound) {
+        this.backGroundSound = backGroundSound;
     }
 
     public static boolean isThisUserNameExist(String userName) {
@@ -39,6 +75,7 @@ public class Users {
             if (allUser.getUserName().equals(userName))
                 return true;
         }
+
         return false;
     }
 
@@ -51,7 +88,7 @@ public class Users {
     }
 
     public static boolean isPasswordCorrect(String userName, String password) {
-        if (getUserByUserName(userName).getPassword().equals(password))
+        if (allUsers.size() != 0 && getUserByUserName(userName).getPassword().equals(password))
             return true;
         return false;
     }

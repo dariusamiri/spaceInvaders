@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 public class AlertBox {
 
     public static void displayAlert(String stageTitle, String alert) {
-        int ALERT_WIDTH = 275;
+        int ALERT_WIDTH = 300;
         int ALERT_HEIGHT = 125;
         Stage window = new Stage();
         GridPane alertRoot = new GridPane();

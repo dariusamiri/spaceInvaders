@@ -3,8 +3,13 @@ package sample;
 import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
+
+import java.io.File;
 
 public class Shot {
     private double xPos;
@@ -12,15 +17,21 @@ public class Shot {
     private Pane currentRoot;
     public static int ARROW_WIDTH = 2;
     public static int ARROW_HEIGHT = 16;
-    private final int SHOT_SPEED = 10;
     private SpaceInvaders spaceInvaders;
     private Rectangle arrow = new Rectangle();
     private boolean isAlive;
     private final double dYShot = 20;
     private final int plusScore = 1;
-    Thread thread;
+    private String soundName = "shotship.mp3";
+    private Media media = new Media(new File(soundName).toURI().toString());
+    private MediaPlayer shotSound = new MediaPlayer(media);
 
     public Shot(double xPos, double yPos, Pane currentRoot, SpaceInvaders spaceInvaders) {
+        if (Main.currentUser.isGameSound()) {
+            shotSound.play();
+            shotSound.setCycleCount(2);
+            shotSound.setVolume(0.7);
+        }
         this.xPos = xPos;
         this.yPos = yPos;
         this.currentRoot = currentRoot;
@@ -37,11 +48,6 @@ public class Shot {
         };
         currentRoot.getChildren().add(arrow);
         timer.start();
-
-    }
-
-    public Rectangle getArrow() {
-        return arrow;
     }
 
     public void setYPos(double yPos) {
@@ -54,7 +60,7 @@ public class Shot {
             arrow.setWidth(ARROW_WIDTH);
             arrow.setLayoutX(xPos);
             arrow.setLayoutY(yPos);
-            arrow.setFill(Color.RED);
+            arrow.setFill(Color.LIGHTGRAY);
         }
     }
 
@@ -64,7 +70,7 @@ public class Shot {
 
     public boolean checkShot() {
         if (spaceInvaders.getArmy().checkIsHit(arrow.getLayoutX(), arrow.getLayoutY())) {
-            spaceInvaders.getPlayer().setScore(spaceInvaders.getPlayer().getScore() + plusScore);
+            Main.currentUser.setScore(Main.currentUser.getScore() + plusScore);
             spaceInvaders.getPlayer().setShotState(true);
             currentRoot.getChildren().remove(arrow);
             isAlive = false;

@@ -25,25 +25,18 @@ public class SpaceInvaders {
     private Text point;
     private Button exit;
     public static boolean gameOver;
-    String name = "c.mp3";
+    String name = "spaceinvaders.mp3";
     Media media = new Media(new File(name).toURI().toString());
-    MediaPlayer mediaPlayer = new MediaPlayer(media);
+    MediaPlayer backGroundSound = new MediaPlayer(media);
     int time = 0;
+    public static boolean show = true;
 
     public SpaceInvaders(Stage primaryStage, Scene previousScene) {
         this.primaryStage = primaryStage;
         this.previousScene = previousScene;
-
         Image image = new Image("file:ClearSpace.jpg");
         ImageView imageView = new ImageView(image);
         currentRoot.getChildren().add(imageView);
-//        exit = new Button("Exit");
-//        exit.setOnAction(e -> gameOver());
-//        exit.setLayoutX(Main.GAME_WIDTH - 48);
-//        exit.setLayoutY(0);
-//        exit.setFont(Font.font(16));
-//        currentRoot.getChildren().add(exit);
-
         point = new Text("score  :  " + 0);
         point.setFill(Color.WHITE);
         point.setFont(Font.font(38));
@@ -55,12 +48,14 @@ public class SpaceInvaders {
         paint();
         gameOver = false;
 
-//        mediaPlayer.setAutoPlay(true);
-
         AnimationTimer spaceInvaders = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                mediaPlayer.setAutoPlay(true);
+                if (Main.currentUser.isBackGroundSound()) {
+                    backGroundSound.setAutoPlay(true);
+                    backGroundSound.setCycleCount(MediaPlayer.INDEFINITE);
+                    backGroundSound.setVolume(0.6);
+                }
                 if (gameOver) {
                     gameOver();
                     this.stop();
@@ -74,7 +69,6 @@ public class SpaceInvaders {
             }
         };
         spaceInvaders.start();
-
     }
 
     public ALienArmy getArmy() {
@@ -85,11 +79,20 @@ public class SpaceInvaders {
         return player;
     }
 
+    public void setUserBestScore() {
+        if (Main.currentUser.getScore() > Main.currentUser.getBestScore()) {
+            Main.currentUser.setBestScore(Main.currentUser.getScore());
+        }
+        Main.currentUser.setScore(0);
+    }
+
     public void gameOver() {
+        setUserBestScore();
         primaryStage.setScene(previousScene);
-        AlertBox.displayAlert("Game Over!", "Tou was destroyed!" +
-                "\n\nSorry!!!!!");
-        mediaPlayer.stop();
+        if (show) {
+            AlertBox.displayAlert("Game Over!", "\nYou Lose!");
+        }
+        backGroundSound.stop();
     }
 
     public void paint() {
@@ -100,10 +103,9 @@ public class SpaceInvaders {
         new AlienShot(currentRoot, this);
     }
 
-
     public void update() {
         army.drawArmy();
-        drawScoreBoard(player.getScore());
+        drawScoreBoard(Main.currentUser.getScore());
     }
 
     public void drawScoreBoard(int score) {
