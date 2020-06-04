@@ -25,8 +25,6 @@ public class AlertBox {
         alertRoot.add(ok, 2, 11);
         Scene alertScene = new Scene(alertRoot, ALERT_WIDTH, ALERT_HEIGHT);
         window.setScene(alertScene);
-        window.showAndWait();
+        window.show();
     }
-
-
 }

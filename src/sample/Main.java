@@ -1,25 +1,26 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.text.Font;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.io.FileNotFoundException;
-
 
 public class Main extends Application {
-    public static int GAME_WIDTH = 900;
-    public static int GAME_HEIGHT = 500;
+    public static int GAME_WIDTH = 1285;
+    public static int GAME_HEIGHT = 685;
     Users currentUser = null;
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+
+    public void start(Stage primaryStage) {
         primaryStage.setTitle("Space Invaders Game");
         showSignInMenu(primaryStage);
     }
@@ -33,7 +34,6 @@ public class Main extends Application {
 
     public void showSignInMenu(Stage primaryStage) {
         GridPane signInRoot = new GridPane();
-        Scene gameMenu;
         Text userName = new Text("username : ");
         Text password = new Text("password : ");
         TextField userNameField = new TextField("");
@@ -51,14 +51,9 @@ public class Main extends Application {
         signInRoot.add(logIn, 2, 14);
         signInRoot.add(signUp, 2, 19);
         signInRoot.add(button, 2, 25);
+        signInRoot.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, null, null)));
         signIn = new Scene(signInRoot, Main.GAME_WIDTH, Main.GAME_HEIGHT);
-        button.setOnAction(e -> {
-            try {
-                new SpaceInvaders(primaryStage, signIn);
-            } catch (FileNotFoundException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
-            }
-        });
+        button.setOnAction(e -> new SpaceInvaders(primaryStage, signIn));
         signUp.setOnAction(e -> showSignUpMenu(primaryStage, signIn));
         logIn.setOnAction(e -> {
             if (!userNameField.getText().isEmpty() && !passwordField.getText().isEmpty() && Users.isPasswordCorrect(userNameField.getText(), passwordField.getText())) {
@@ -106,6 +101,7 @@ public class Main extends Application {
         signUpRoot.add(passwordField, 3, 10);
         signUpRoot.add(createNewAccount, 2, 14);
         signUpRoot.add(back, 3, 14);
+        signUpRoot.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, null, null)));
         signUp = new Scene(signUpRoot, Main.GAME_WIDTH, Main.GAME_HEIGHT);
         primaryStage.setScene(signUp);
     }
@@ -121,14 +117,9 @@ public class Main extends Application {
         gameMenuRoot.add(newGame, 2, 4);
         gameMenuRoot.add(changeUserName, 2, 7);
         gameMenuRoot.add(logOut, 2, 10);
+        gameMenuRoot.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, null, null)));
         gameMenu = new Scene(gameMenuRoot, GAME_WIDTH, GAME_HEIGHT);
-        newGame.setOnAction(e -> {
-            try {
-                new SpaceInvaders(primaryStage, gameMenu);
-            } catch (FileNotFoundException fileNotFoundException) {
-                fileNotFoundException.printStackTrace();
-            }
-        });
+        newGame.setOnAction(e -> new SpaceInvaders(primaryStage, gameMenu));
         changeUserName.setOnAction(e -> showChangeUserNameMenu(primaryStage, gameMenu));
         logOut.setOnAction(e -> {
             currentUser = null;
@@ -158,6 +149,7 @@ public class Main extends Application {
         root.add(newUserNameField, 3, 3);
         root.add(back, 2, 6);
         root.add(ok, 3, 6);
+        root.setBackground(new Background(new BackgroundFill(Color.LIGHTSLATEGRAY, null, null)));
         Scene scene = new Scene(root, GAME_WIDTH, GAME_HEIGHT);
         primaryStage.setScene(scene);
     }

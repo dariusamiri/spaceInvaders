@@ -2,51 +2,79 @@ package sample;
 
 import javafx.animation.AnimationTimer;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 
-public class SpaceInvaders implements Runnable {
-    Stage primaryStage;
-    Scene previousScene;
-    Player player = null;
-    ALienArmy army = null;
-    Graphics offScreen_high;
-    BufferedImage offScreen;
-    Pane currentRoot = new Pane();
-    ImageView imageView;
-    Text point;
 
-    public SpaceInvaders(Stage primaryStage, Scene previousScene) throws FileNotFoundException {
+public class SpaceInvaders {
+    private Stage primaryStage;
+    private Scene previousScene;
+    private Player player = null;
+    private ALienArmy army = null;
+    private Pane currentRoot = new Pane();
+    private Text point;
+    private Button exit;
+    public static boolean gameOver;
+    String name = "c.mp3";
+    Media media = new Media(new File(name).toURI().toString());
+    MediaPlayer mediaPlayer = new MediaPlayer(media);
+    int time = 0;
+
+    public SpaceInvaders(Stage primaryStage, Scene previousScene) {
         this.primaryStage = primaryStage;
         this.previousScene = previousScene;
-        Scene scene = new Scene(currentRoot, Main.GAME_WIDTH, Main.GAME_HEIGHT);
+
         Image image = new Image("file:ClearSpace.jpg");
         ImageView imageView = new ImageView(image);
         currentRoot.getChildren().add(imageView);
+//        exit = new Button("Exit");
+//        exit.setOnAction(e -> gameOver());
+//        exit.setLayoutX(Main.GAME_WIDTH - 48);
+//        exit.setLayoutY(0);
+//        exit.setFont(Font.font(16));
+//        currentRoot.getChildren().add(exit);
+
         point = new Text("score  :  " + 0);
         point.setFill(Color.WHITE);
         point.setFont(Font.font(38));
         point.setLayoutX(50);
         point.setLayoutY(50);
         currentRoot.getChildren().add(point);
+        Scene scene = new Scene(currentRoot, Main.GAME_WIDTH, Main.GAME_HEIGHT);
         primaryStage.setScene(scene);
         paint();
+        gameOver = false;
 
-        Thread thread = new Thread(this);
-        thread.start();
+//        mediaPlayer.setAutoPlay(true);
+
+        AnimationTimer spaceInvaders = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                mediaPlayer.setAutoPlay(true);
+                if (gameOver) {
+                    gameOver();
+                    this.stop();
+                }
+                if (time > 5) {
+                    army.moveArmy();
+                    time = 0;
+                }
+                update();
+                time++;
+            }
+        };
+        spaceInvaders.start();
+
     }
 
     public ALienArmy getArmy() {
@@ -57,45 +85,28 @@ public class SpaceInvaders implements Runnable {
         return player;
     }
 
-    public static void gameOver() {
-        System.exit(0);
+    public void gameOver() {
+        primaryStage.setScene(previousScene);
+        AlertBox.displayAlert("Game Over!", "Tou was destroyed!" +
+                "\n\nSorry!!!!!");
+        mediaPlayer.stop();
     }
 
     public void paint() {
         player = new Player(primaryStage, currentRoot, this);
         player.drawShip();
-        army = new ALienArmy(currentRoot);
+        army = new ALienArmy(currentRoot, this);
         army.drawArmy();
+        new AlienShot(currentRoot, this);
     }
 
 
     public void update() {
         army.drawArmy();
-        if (player.getShot() != null) {
-            player.getShot().drawShot();
-        }
         drawScoreBoard(player.getScore());
     }
 
     public void drawScoreBoard(int score) {
         point.setText("score  :  " + score);
-    }
-
-    @Override
-    public void run() {
-        int count = 0;
-        while (true) {
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException ie) {
-
-            }
-            if (count > 200) {
-                army.moveArmy();
-                count = 0;
-            }
-            update();
-            count++;
-        }
     }
 }

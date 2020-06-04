@@ -4,4 +4,5 @@ module Game {
     requires java.desktop;
     opens sample;
     requires kotlin.stdlib;
+    requires javafx.media;
 }

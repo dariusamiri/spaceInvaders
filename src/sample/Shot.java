@@ -1,32 +1,42 @@
 package sample;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class Shot implements Runnable {
+public class Shot {
     private double xPos;
     private double yPos;
     private Pane currentRoot;
     public static int ARROW_WIDTH = 2;
     public static int ARROW_HEIGHT = 16;
-    private int ARROW_SPEED = 2;
+    private final int SHOT_SPEED = 10;
     private SpaceInvaders spaceInvaders;
-    private Rectangle arrow = null;
-    private boolean isAlive = true;
-    private final double dYShot = 15;
+    private Rectangle arrow = new Rectangle();
+    private boolean isAlive;
+    private final double dYShot = 20;
     private final int plusScore = 1;
+    Thread thread;
 
     public Shot(double xPos, double yPos, Pane currentRoot, SpaceInvaders spaceInvaders) {
         this.xPos = xPos;
         this.yPos = yPos;
         this.currentRoot = currentRoot;
         this.spaceInvaders = spaceInvaders;
-        drawShot();
+        isAlive = true;
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long l) {
+                drawShot();
+                moveShot();
+                if (!checkShot())
+                    this.stop();
+            }
+        };
         currentRoot.getChildren().add(arrow);
-        Thread thread = new Thread(this);
-        thread.start();
+        timer.start();
 
     }
 
@@ -39,60 +49,32 @@ public class Shot implements Runnable {
     }
 
     public void drawShot() {
-        if (arrow == null) {
-            arrow = new Rectangle();
+        if (isAlive) {
             arrow.setHeight(ARROW_HEIGHT);
             arrow.setWidth(ARROW_WIDTH);
             arrow.setLayoutX(xPos);
             arrow.setLayoutY(yPos);
             arrow.setFill(Color.RED);
-        } else {
-            if (isAlive) {
-                arrow.setHeight(ARROW_HEIGHT);
-                arrow.setWidth(ARROW_WIDTH);
-                arrow.setLayoutX(xPos);
-                arrow.setLayoutY(yPos);
-                arrow.setFill(Color.RED);
-            } else {
-                Platform.runLater(() -> currentRoot.getChildren().remove(arrow));
-            }
         }
     }
 
-
     public void moveShot() {
-        if (checkShot() && isAlive) {
-            double dY = 2;
-            this.setYPos(yPos - dY);
-        } else {
-            spaceInvaders.getPlayer().setShotState(true);
-        }
+        this.setYPos(yPos - dYShot);
     }
 
     public boolean checkShot() {
-        if (arrow.getLayoutY() - dYShot <= 0) {
-            isAlive = false;
-            return false;
-        }
         if (spaceInvaders.getArmy().checkIsHit(arrow.getLayoutX(), arrow.getLayoutY())) {
             spaceInvaders.getPlayer().setScore(spaceInvaders.getPlayer().getScore() + plusScore);
+            spaceInvaders.getPlayer().setShotState(true);
+            currentRoot.getChildren().remove(arrow);
             isAlive = false;
+            return false;
+        } else if (arrow.getLayoutY() - dYShot <= 0) {
+            isAlive = false;
+            spaceInvaders.getPlayer().setShotState(true);
+            currentRoot.getChildren().remove(arrow);
             return false;
         }
         return true;
-    }
-
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                Thread.sleep(ARROW_SPEED);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            moveShot();
-            if (!isAlive)
-                break;
-        }
     }
 }

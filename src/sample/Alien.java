@@ -21,7 +21,7 @@ public class Alien {
         this.currentRoot = currentRoot;
         isAlive = true;
         allAliens.add(this);
-        currentRoot.getChildren().add(enemy);
+        Platform.runLater(() -> currentRoot.getChildren().add(enemy));
     }
 
     public void setALienXLayout(double xLayout) {
@@ -56,7 +56,8 @@ public class Alien {
             enemy.setLayoutY(yLayout);
             enemy.setFill(color);
         } else {
-            Platform.runLater(() -> currentRoot.getChildren().remove(enemy));
+//            Platform.runLater(() -> currentRoot.getChildren().remove(enemy));
+            Platform.runLater(() -> enemy.setFill(null));
         }
     }
 }

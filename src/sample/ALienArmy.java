@@ -9,17 +9,19 @@ public class ALienArmy {
     private Pane root;
     private final double distanceFromSide = 150;
     private final double distanceFromUp = 100;
-    private final int numberALiensInArrow = 13;
+    public static final int numberALiensInArrow = 10;
     ArrayList<Alien> firstRow = new ArrayList<>(numberALiensInArrow);
     ArrayList<Alien> secondRow = new ArrayList<>(numberALiensInArrow);
     ArrayList<Alien> thirdRow = new ArrayList<>(numberALiensInArrow);
     private boolean moveRight = true;
     private boolean moveDown = true;
     private final double dX = 5;
-    private final double dY = 30;
+    private final double dY = 20;
+    private SpaceInvaders spaceInvaders;
 
-    public ALienArmy(Pane root) {
+    public ALienArmy(Pane root, SpaceInvaders spaceInvaders) {
         this.root = root;
+        this.spaceInvaders = spaceInvaders;
         createArmy();
         setStartingPosition();
     }
@@ -38,33 +40,27 @@ public class ALienArmy {
         for (int i = 0; i < numberALiensInArrow; i++) {
             firstRow.get(i).setALienXLayout(x);
             firstRow.get(i).setALienYLayout(y);
-            x += 40;
-        }
-        x = distanceFromSide;
-        y += dY;
-        for (int i = 0; i < numberALiensInArrow; i++) {
+            y += 35;
             secondRow.get(i).setALienXLayout(x);
             secondRow.get(i).setALienYLayout(y);
-            x += 40;
-        }
-        x = distanceFromSide;
-        y += dY;
-        for (int i = 0; i < numberALiensInArrow; i++) {
+            y += 35;
             thirdRow.get(i).setALienXLayout(x);
             thirdRow.get(i).setALienYLayout(y);
-            x += 40;
+            y = distanceFromUp;
+            x += 50;
         }
     }
 
+
     public void drawArmy() {
-        for (int i = 0; i < firstRow.size(); i++) {
-            firstRow.get(i).drawAlien(Color.AQUA);
+        for (Alien alien : firstRow) {
+            alien.drawAlien(Color.AQUA);
         }
-        for (int i = 0; i < secondRow.size(); i++) {
-            secondRow.get(i).drawAlien(Color.DARKVIOLET);
+        for (Alien value : secondRow) {
+            value.drawAlien(Color.DARKVIOLET);
         }
-        for (int i = 0; i < thirdRow.size(); i++) {
-            thirdRow.get(i).drawAlien(Color.LIGHTPINK);
+        for (Alien alien : thirdRow) {
+            alien.drawAlien(Color.LIGHTPINK);
         }
     }
 
@@ -114,8 +110,8 @@ public class ALienArmy {
 
 
     public boolean isRowArmyHasAlive(ArrayList<Alien> row) {
-        for (int i = 0; i < row.size(); i++) {
-            if (row.get(i).getIsAlive())
+        for (Alien alien : row) {
+            if (alien.getIsAlive())
                 return true;
         }
         return false;
@@ -141,7 +137,7 @@ public class ALienArmy {
 
     public void moveDown() {
         if (getMostDownAlienY() + dY >= Main.GAME_HEIGHT)
-            SpaceInvaders.gameOver();
+            SpaceInvaders.gameOver = true;
         else {
             if (moveDown) {
                 for (Alien alien : firstRow) {
@@ -187,14 +183,12 @@ public class ALienArmy {
                     thirdRow.get(i).setIsAlive(false);
                     return true;
                 }
-            }
-            if (secondRow.get(i).getIsAlive() && xShot >= secondRow.get(i).getALienXLayout() && xShot + Shot.ARROW_WIDTH <= secondRow.get(i).getALienXLayout() + Alien.ALIEN_WIDTH) {
+            } else if (secondRow.get(i).getIsAlive() && xShot >= secondRow.get(i).getALienXLayout() && xShot + Shot.ARROW_WIDTH <= secondRow.get(i).getALienXLayout() + Alien.ALIEN_WIDTH) {
                 if (yShot - Shot.ARROW_HEIGHT <= secondRow.get(i).getALienYLayout() && yShot >= secondRow.get(i).getALienYLayout() - Alien.ALIEN_HEIGHT) {
                     secondRow.get(i).setIsAlive(false);
                     return true;
                 }
-            }
-            if (firstRow.get(i).getIsAlive() && xShot >= firstRow.get(i).getALienXLayout() && xShot + Shot.ARROW_WIDTH <= firstRow.get(i).getALienXLayout() + Alien.ALIEN_WIDTH) {
+            } else if (firstRow.get(i).getIsAlive() && xShot >= firstRow.get(i).getALienXLayout() && xShot + Shot.ARROW_WIDTH <= firstRow.get(i).getALienXLayout() + Alien.ALIEN_WIDTH) {
                 if (yShot - Shot.ARROW_HEIGHT <= firstRow.get(i).getALienYLayout() && yShot >= firstRow.get(i).getALienYLayout() - Alien.ALIEN_HEIGHT) {
                     firstRow.get(i).setIsAlive(false);
                     return true;

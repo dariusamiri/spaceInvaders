@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -14,29 +15,19 @@ public class Player {
     private Rectangle ship = new Rectangle();
     private boolean shotState = true;
     private SpaceInvaders spaceInvaders;
-    private Rectangle arrow = null;
     private Shot shot;
     private int score = 0;
     private final int dX = 10;
+    private final int SHIP_HEIGHT = 15;
+    private final int SHIP_WIDTH = 55;
+    private final double yPos = Main.GAME_HEIGHT - SHIP_HEIGHT;
+    private double xPos = (Main.GAME_WIDTH - SHIP_WIDTH)/2 ;
 
     public Player(Stage primaryStage, Pane currentRoot, SpaceInvaders spaceInvaders) {
         this.currentRoot = currentRoot;
         this.spaceInvaders = spaceInvaders;
         currentRoot.getChildren().add(ship);
         primaryStage.getScene().setOnKeyPressed(e -> this.keyPressed(e.getCode()));
-    }
-
-    private final int SHIP_HEIGHT = 15;
-    private final int SHIP_WIDTH = 55;
-    private final double yPos = Main.GAME_HEIGHT - 2*SHIP_HEIGHT;
-    private double xPos = (Main.GAME_WIDTH - SHIP_WIDTH) / 2;
-
-    public Rectangle getArrow() {
-        return arrow;
-    }
-
-    public Shot getShot() {
-        return shot;
     }
 
     public int getScore() {
@@ -71,10 +62,17 @@ public class Player {
 
     public void shot() {
         if (shotState) {
-            shot = new Shot(ship.getLayoutX() + SHIP_WIDTH / 2, ship.getLayoutY(), currentRoot, spaceInvaders);
-            shot.drawShot();
-            arrow = shot.getArrow();
+            shot = new Shot(ship.getLayoutX() + SHIP_WIDTH / 2 - Shot.ARROW_WIDTH / 2, ship.getLayoutY(), currentRoot, spaceInvaders);
             shotState = false;
         }
+    }
+
+    public boolean isHit(double xShot, double yShot) {
+        if (ship.getLayoutX() <= xShot && xShot + AlienShot.ARROW_WIDTH <= ship.getLayoutX() + SHIP_WIDTH) {
+            if (ship.getLayoutY() - SHIP_HEIGHT <= yShot && yShot - AlienShot.ARROW_HEIGHT <= ship.getLayoutY()) {
+                SpaceInvaders.gameOver = true;
+            }
+        }
+        return false;
     }
 }
